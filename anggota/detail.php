@@ -1,75 +1,88 @@
 <?php
-include '../aset/header.php';
 
 include 'koneksi.php';
-$id_pinjam = $_GET['id_pinjam'];
 
-$sql = "SELECT * FROM peminjaman INNER JOIN buku on peminjaman.id_buku = buku.id_buku WHERE id_pinjam = $id_pinjam";
-$res = mysqli_query($koneksi,$sql);
-$detail = mysqli_fetch_assoc($res);
+include '../aset/header.php';
+
+$id = $_GET["id_anggota"];
+
+$query = mysqli_query($connect, "SELECT * FROM dataanggota INNER JOIN level USING(id_level) WHERE dataanggota.id_anggota = '$id' ");
+
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
 
-<div class="container">
-    <div class="row mt-4">
-        <div class="col-md-7">
-            <h2>Detail Peminjaman</h2>
-            <hr class="bg-light">
-              <table class="table table-bordered">
-                  <tr>
-                      <td><strong>Buku</strong></td>
-                      <td><?= $detail['judul']?></td>
-                  </tr>
-                  <tr>
-                      <td><strong>Tanggal pinjam</strong></td>
-                      <td><?= date('d F Y', strtotime($detail['tgl_pinjam'])) ?></td>
-                  </tr>
-                  <tr>
-                      <td><strong>Tanggal Jatuh Tempo</strong></td>
-                      <td><?= date('d F Y', strtotime($detail['tgl_jatuh_tempo'])) ?></td>
-                  </tr>
-                  <tr>
-                      <td><strong>Tanggal Kembali</strong></td>
-                      <td>
-                          <?php
-                          if($detail['tgl_kembali'] == '0000-00-00'){
-                              echo '-';
-                          }else{
-                              echo date('d F Y',strtotime($detail['tgl_kembali']));
-                          }
-                          ?>
-                      </td>
-                  </tr>
-                  <tr>
-                      <td><strong>Status</strong></td>
-                      <td><?= $detail['status']?></td>
-                  </tr>
-                  <?php
-                    if($detail['denda'] > 0){?>
-                  <tr>
-                      <td class="table-danger" colspan="2"><strong>Denda yang harus dibayar:</strong>Rp <?=$detail['denda']?></td>
-                  </tr>
-                  <?php
-                    }
-                  ?>
-                  <tr>
-                      <td class="text-right" colspan="2">
-                          <a href="index.php" class="btn btn-succes"><i class="fa fa-angle-double-left"></i>Kembali</a>
-                          <a class="btn btn-primary <?php if($detail['status'] == 'kembali'){echo "disabled";} ?>"
-                          href="form-kembali.php?id_pinjam=<?= $detail['id_pinjam']?>&id_buku=<?= $detail['id_buku']?>"
-                          role="button">Form Pengembalian</a>
-                      </td>
-                  </tr>    
-              </table>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md">
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
+            <div class="card">
+            <div class="card-header">
+            <h2 class="card-title">Detail Anggota</h2>                
+            </div>
+            <div class="card-body">
 
+                <table class="table">    
+                <?php
+                    while($buku = mysqli_fetch_assoc($query)):?>
+                    
+                    <tr>
+                        <td width="150px">Nama</td>
+                        <td><?= $buku['nama']?></td>
+                    </tr>    
+                    <tr>
+                        <td>ID</td>
+                        <td><?= $buku['id_anggota']?></td>
+                    </tr>
+                    <tr>
+                        <td>Kelas</td>
+                        <td><?= $buku['kelas']?></td>
+                    </tr>
+                    <tr>
+                        <td>telp</td>
+                        <td><?= $buku['telp']?></td>
+                    </tr>
+                    <tr>
+                        <td>Username</td>
+                        <td><?= $buku['username']?></td>
+                    </tr>
+                    <tr>
+                        <td>Password</td>
+                        <td><?= $buku['password']?></td>
+                    </tr>
+                    <tr>
+                        <td>Level</td>
+                        <td><?= $buku['level']?></td>
+                    </tr>
+                        <td>Aksi</td>     
+                        <td>
+                           <a href="edit.php?id_anggota=<?= $buku["id_anggota"];?>  " class="badge badge-warning">Edit</a>
+                           <a href="hapus.php?id_anggota=<?= $buku["id_anggota"];?> " onclick="return confirm('Yakin ingin menghapus data?')" class="badge badge-danger">Hapus</a>
+                        </td>
+                     </tr>
+                 <?php
+                   endwhile;
+                 ?>            
 
+                </table>
+                            </div>
+                            </div>
 
-
+</body>
+</html>
 
 <?php
-include '../aset/footer.php'
+
+include '../aset/footer.php';
+
 ?>
